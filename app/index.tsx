@@ -1,15 +1,22 @@
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
+import { Colors } from '@/constants/Colors'
+import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { FlatList, Platform, useColorScheme } from 'react-native'
+import { ActivityIndicator, FlatList, Platform, SafeAreaView, TouchableOpacity } from 'react-native'
 
 export default function HomeContentLayout() {
 	const [getData, setData] = useState<{ name: string; authToken: string }[]>([])
 	const [isLoading, setLoading] = useState(false)
+	const { refresh } = useLocalSearchParams()
 
 	const onRefresh = () => {
 		setLoading(true)
-		fetch(Platform.OS === 'web' ? 'https://cors-anywhere.herokuapp.com/https://stevedao.xyz/fp/users?group=vn' : 'https://stevedao.xyz/fp/users?group=vn')
+		fetch(
+			Platform.OS === 'web'
+				? 'https://cors-anywhere.herokuapp.com/https://stevedao.xyz/fp/users?group=vn'
+				: 'https://stevedao.xyz/fp/users?group=vn',
+		)
 			.then(res => res.json())
 			.then(res => {
 				setData(res.data)
@@ -22,20 +29,21 @@ export default function HomeContentLayout() {
 
 	useEffect(() => {
 		onRefresh()
-	}, [])
+	}, [refresh])
 
 	return (
-		<ThemedView style={{ flex: 1, padding: 16 }}>
+		<ThemedView>
 			<FlatList
 				refreshing={isLoading}
 				onRefresh={onRefresh}
 				data={getData}
 				renderItem={user => (
-					<ThemedText style={{ padding: 16 }} type="default">
-						{user.item.name}
-					</ThemedText>
+					<TouchableOpacity style={{ padding: 16, paddingRight:0 }}>
+						<ThemedText>{user.item.name}</ThemedText>
+						<ThemedView darkColor='gray' lightColor='gray' style={{ marginTop:8, height: 0.5 }} />
+					</TouchableOpacity>
 				)}
-                keyExtractor={user => user.authToken}
+				keyExtractor={user => user.authToken}
 			/>
 		</ThemedView>
 	)

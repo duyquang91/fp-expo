@@ -3,7 +3,7 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from '@react-navigation/native'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 
@@ -11,19 +11,18 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { HeaderButton } from '@react-navigation/elements'
 import React, { useState } from 'react'
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 
 export default function RootLayout() {
-	const [ getColorScheme, setColorScheme] = useState(useColorScheme())
+  const themeColor = useColorScheme()
 	const headerRight = () => {
 		return (
 			<HeaderButton>
 				<MaterialIcons.Button
-					name={getColorScheme === 'dark' ? 'light-mode' : 'dark-mode'}
+					name="refresh"
 					backgroundColor="transparent"
-          color={getColorScheme === 'dark' ? '#fff' : '#000'}
-          onPress={() => {
-            setColorScheme(getColorScheme === 'dark' ? 'light' : 'dark')
+          color={themeColor === 'dark' ? '#fff' : '#000'}
+          onPress={_ => {
+            router.setParams({ refresh: Date.now().toString() })
           }}
 				/>
 			</HeaderButton>
@@ -31,7 +30,7 @@ export default function RootLayout() {
 	}
 
 	return (
-		<ThemeProvider value={getColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+		<ThemeProvider value={themeColor === 'dark' ? DarkTheme : DefaultTheme}>
 			<Stack>
 				<Stack.Screen
 					name="index"
