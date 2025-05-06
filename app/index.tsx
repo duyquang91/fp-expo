@@ -1,31 +1,42 @@
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { fetchApi } from "@/hooks/useFetchApi";
-import React, { useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
+import React, { useEffect, useState } from 'react'
+import { FlatList, Platform, useColorScheme } from 'react-native'
 
 export default function HomeContentLayout() {
-    const [getData, setData] = useState<{ name: string, authToken: string }[]>([])
+	const [getData, setData] = useState<{ name: string; authToken: string }[]>([])
+	const [isLoading, setLoading] = useState(false)
 
-    useEffect(() => {
-        fetchApi('https://stevedao.xyz/fp/users').then((res) => {
-            console.log(res)
-        }
-        ).catch((err) => {
-            console.log(err)
-        }
-        )
-    }, [])
+	const onRefresh = () => {
+		setLoading(true)
+		fetch(Platform.OS === 'web' ? 'https://cors-anywhere.herokuapp.com/https://stevedao.xyz/fp/users?group=vn' : 'https://stevedao.xyz/fp/users?group=vn')
+			.then(res => res.json())
+			.then(res => {
+				setData(res.data)
+			})
+			.catch(err => {})
+			.finally(() => {
+				setLoading(false)
+			})
+	}
 
-    return (
-        <ThemedView style={{ flex: 1, padding: 16 }}>
+	useEffect(() => {
+		onRefresh()
+	}, [])
 
-            <FlatList
-                data={getData}
-                renderItem={user => (
-                    <ThemedText style={{ padding: 16 }} type="default">{`Item ${user.item.name}`}</ThemedText>
-                )}
-            />
-        </ThemedView>
-    );
+	return (
+		<ThemedView style={{ flex: 1, padding: 16 }}>
+			<FlatList
+				refreshing={isLoading}
+				onRefresh={onRefresh}
+				data={getData}
+				renderItem={user => (
+					<ThemedText style={{ padding: 16 }} type="default">
+						{user.item.name}
+					</ThemedText>
+				)}
+                keyExtractor={user => user.authToken}
+			/>
+		</ThemedView>
+	)
 }

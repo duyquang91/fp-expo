@@ -1,7 +1,21 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.organizeImports": "explicit",
-    "source.sortMembers": "explicit"
-  }
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "always",
+		"source.organizeImports": "explicit",
+		"source.sortMembers": "explicit"
+	},
+	"editor.formatOnSave": true,
+	"editor.formatOnType": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"typescript.format.enable": false,
+	"javascript.format.enable": false,
+	"prettier.singleQuote": true,
+	"prettier.trailingComma": "all",
+	"prettier.arrowParens": "avoid",
+	"prettier.semi": false,
+	"prettier.useTabs": true,
+	"prettier.tabWidth": 2,
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }
