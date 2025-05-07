@@ -1,17 +1,19 @@
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { Colors } from '@/constants/Colors'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, FlatList, Platform, SafeAreaView, TouchableOpacity } from 'react-native'
+import { FlatList, Platform, TouchableOpacity } from 'react-native'
+import { jwtDecode } from 'jwt-decode'
 
 export default function HomeContentLayout() {
 	const [getData, setData] = useState<{ name: string; authToken: string }[]>([])
 	const [isLoading, setLoading] = useState(false)
 	const { refresh } = useLocalSearchParams()
+    const [ error, setError ] = useState<string | null>(null)
 
 	const onRefresh = () => {
 		setLoading(true)
+        setError(null)
 		fetch(
 			Platform.OS === 'web'
 				? 'https://cors-anywhere.herokuapp.com/https://stevedao.xyz/fp/users?group=vn'
@@ -20,12 +22,28 @@ export default function HomeContentLayout() {
 			.then(res => res.json())
 			.then(res => {
 				setData(res.data)
+				console.log(res.data)
 			})
-			.catch(err => {})
+			.catch(err => {
+                setError(err.message)
+            })
 			.finally(() => {
 				setLoading(false)
 			})
 	}
+
+	function getTokenExpiryRemainingString (authToken: string) {
+		const timeInterval = jwtDecode<{ expires: number }>(authToken).expires
+		if (timeInterval > 0 && timeInterval <= Date.now() / 1000) {
+			return <ThemedText darkColor='red' lightColor='red'>Expired</ThemedText>
+		}
+		if (timeInterval !== 0) {
+		  const date = new Date(timeInterval * 1000)
+		  return <ThemedText darkColor='grey'>{date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</ThemedText>
+		} else {
+		  return <></>
+		}
+	  }
 
 	useEffect(() => {
 		onRefresh()
@@ -33,6 +51,7 @@ export default function HomeContentLayout() {
 
 	return (
 		<ThemedView>
+            <ThemedText>{error}</ThemedText>
 			<FlatList
 				refreshing={isLoading}
 				onRefresh={onRefresh}
@@ -40,6 +59,7 @@ export default function HomeContentLayout() {
 				renderItem={user => (
 					<TouchableOpacity style={{ padding: 16, paddingRight:0 }}>
 						<ThemedText>{user.item.name}</ThemedText>
+						{getTokenExpiryRemainingString(user.item.authToken)}
 						<ThemedView darkColor='gray' lightColor='gray' style={{ marginTop:8, height: 0.5 }} />
 					</TouchableOpacity>
 				)}
