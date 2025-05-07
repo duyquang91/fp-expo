@@ -36,7 +36,13 @@ export default function RootLayout() {
 					name="index"
 					options={{
 						title: 'Food Panda Killer',
-						headerShown: true,
+						headerBackButtonDisplayMode: 'minimal'
+					}}
+				/>
+				<Stack.Screen
+					name="list"
+					options={{
+						title: 'Food Panda Killer',
 						headerRight: headerRight,
 					}}
 				/>
