@@ -13,7 +13,7 @@ export default function HomeContentLayout() {
 
 	const onRefresh = () => {
 		setLoading(true)
-        setError(null)
+        setError('Loading ...')
 		fetch(
 			Platform.OS === 'web'
 				? 'https://cors-anywhere.herokuapp.com/https://stevedao.xyz/fp/users?group=vn'
@@ -22,10 +22,10 @@ export default function HomeContentLayout() {
 			.then(res => res.json())
 			.then(res => {
 				setData(res.data)
-				console.log(res.data)
 			})
 			.catch(err => {
                 setError(err.message)
+				setData([])
             })
 			.finally(() => {
 				setLoading(false)
@@ -57,11 +57,10 @@ export default function HomeContentLayout() {
 				onRefresh={onRefresh}
 				data={getData}
 				renderItem={user => (
-					<TouchableOpacity style={{ padding: 16, paddingRight:0 }}>
+					<ThemedView style={{ padding: 16, borderBottomWidth: 0.5, borderBottomColor: 'gray' }}>
 						<ThemedText>{user.item.name}</ThemedText>
 						{getTokenExpiryRemainingString(user.item.authToken)}
-						<ThemedView darkColor='gray' lightColor='gray' style={{ marginTop:8, height: 0.5 }} />
-					</TouchableOpacity>
+					</ThemedView>
 				)}
 				keyExtractor={user => user.authToken}
 			/>
