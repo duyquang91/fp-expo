@@ -1,46 +1,59 @@
-import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
-import { router } from "expo-router";
-import React from "react";
-import { TextInput, useColorScheme } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemedText } from '@/components/ThemedText'
+import { ThemedView } from '@/components/ThemedView'
+import React from 'react'
+import { ActivityIndicator, TextInput, useColorScheme } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { fetchAPI } from '../utils'
+import { router } from 'expo-router'
 
 export default function RootLayout() {
-    const themeColor = useColorScheme()
+	const themeColor = useColorScheme()
+    const [ isLoading, setIsLoading ] = React.useState(false)
 
-    const processLink = (link: string) => {
-        console.log("Processing link:", link);
-        // Fetch the URL to get the redirect
-        fetch(link, { method: 'HEAD', redirect: 'follow' }).then(response => {
-            // Get the final URL after redirection
-            const finalUrl = response.url;
-            console.log("Redirected to:", finalUrl);
+	const processLink = (link: string) => {
+        setIsLoading(true)
+		fetchAPI(link, { method: 'HEAD', redirect: 'follow' })
+			.then(response => {
+				const finalUrl = response.url
+				const orderIdMatch = finalUrl.match(/groupOrderId=([^&]*)/)
+				const orderId = orderIdMatch ? orderIdMatch[1] : null
 
-            // Extract orderId from the redirected URL
-            const orderIdMatch = finalUrl.match(/orderId=([^&]*)/);
-            const orderId = orderIdMatch ? orderIdMatch[1] : null;
-
-            if (orderId) {
-                console.log("Extracted orderId:", orderId);
-                return orderId;
-            } else {
-                console.log("No orderId found in the URL");
-                return null;
+				if (orderId) {
+                    router.push(`/list?orderId=${orderId}`)
+				} else {
+					alert('No orderId found in the URL')
+				}
+			})
+			.catch(error => {
+				alert(`Error fetching URL: ${error.message}`)
+			}).finally(() => {
+                setIsLoading(false)
             }
-        }).catch(error => {
-            console.error("Error fetching URL:", error);
-        })
-    }
+        )
+	}
 
-    return (
-        <SafeAreaView style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'stretch', padding: 24 }}>
-            <ThemedText>Enter order id:</ThemedText>
-            <TextInput onSubmitEditing={e => {
-                processLink(e.nativeEvent.text)
-            }} 
-            clearButtonMode="always" 
-            style={{ color: themeColor === 'dark' ? '#fff' : '#000', borderWidth: 0.5, borderColor: 'gray', borderRadius: 4, padding: 8, marginTop:8 }} />
-            <ThemedText darkColor={Colors.dark.tint} lightColor={Colors.light.tint} style={{paddingTop: 8}} onPress={_ => { router.push('/list') }}>Continue</ThemedText>
-        </SafeAreaView>
-    )
+	return (
+		<ThemedView style={{flex: 1, padding: 24}}>
+			<ThemedText type='defaultSemiBold'>Enter order link:</ThemedText>
+			<ThemedView style={{ alignSelf:'flex-start', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+				<TextInput
+					placeholder="Dismiss keyboard to start"
+					onSubmitEditing={e => processLink(e.nativeEvent.text)}
+					clearButtonMode="always"
+					style={{
+                        flex: 1,
+						color: themeColor === 'dark' ? '#fff' : '#000',
+						borderWidth: 0.5,
+						borderColor: 'gray',
+						borderRadius: 4,
+						padding: 8,
+						marginTop: 8,
+					}}
+				/>
+                <ActivityIndicator style={{padding: 8, marginTop: 8, display: isLoading ? 'flex': 'none'}}/>
+			</ThemedView>
+		</ThemedView>
+	)
 }
+
+

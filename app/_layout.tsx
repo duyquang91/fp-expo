@@ -3,31 +3,15 @@ import {
 	DefaultTheme,
 	ThemeProvider,
 } from '@react-navigation/native'
-import { router, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
 
 import { useColorScheme } from '@/hooks/useColorScheme'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { HeaderButton } from '@react-navigation/elements'
-import React, { useState } from 'react'
+import React from 'react'
 
 export default function RootLayout() {
-  const themeColor = useColorScheme()
-	const headerRight = () => {
-		return (
-			<HeaderButton>
-				<MaterialIcons.Button
-					name="refresh"
-					backgroundColor="transparent"
-          color={themeColor === 'dark' ? '#fff' : '#000'}
-          onPress={_ => {
-            router.setParams({ refresh: Date.now().toString() })
-          }}
-				/>
-			</HeaderButton>
-		)
-	}
+	const themeColor = useColorScheme()
 
 	return (
 		<ThemeProvider value={themeColor === 'dark' ? DarkTheme : DefaultTheme}>
@@ -36,14 +20,13 @@ export default function RootLayout() {
 					name="index"
 					options={{
 						title: 'Food Panda Killer',
-						headerBackButtonDisplayMode: 'minimal'
 					}}
 				/>
 				<Stack.Screen
 					name="list"
 					options={{
-						title: 'Food Panda Killer',
-						headerRight: headerRight,
+						title: 'Group Order',
+						headerBackButtonDisplayMode: 'minimal',
 					}}
 				/>
 				<Stack.Screen name="+not-found" />
