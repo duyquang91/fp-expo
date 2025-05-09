@@ -10,7 +10,7 @@ import * as FPServices from '../fpServices/fpServices'
 
 export default function HomeContentLayout() {
 	const [getData, setData] = useState<UserBackend[]>([])
-	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData>()
+	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData | null>(null)
 	const [isLoading, setLoading] = useState(false)
 	const { orderId } = useLocalSearchParams()
 
@@ -92,7 +92,7 @@ export default function HomeContentLayout() {
 				}}
 			>
 				<ThemedText type="defaultSemiBold" numberOfLines={1}>
-					Group: {getGroupOrder?.vendor.name ?? ''}
+					Group: {getGroupOrder ? getGroupOrder.host.name : ''}
 				</ThemedText>
 				<ThemedView
 					lightColor="dimgray"
@@ -100,7 +100,7 @@ export default function HomeContentLayout() {
 					style={{ height: 0.35, marginTop: 8, marginBottom: 8 }}
 				/>
 				<ThemedText type="defaultSemiBold">
-					Host by: {getGroupOrder?.host.name ?? ''}
+					Host by: {getGroupOrder ? getGroupOrder.vendor.name : ''}
 				</ThemedText>
 			</ThemedView>
 

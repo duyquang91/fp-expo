@@ -37,7 +37,7 @@ export default function RootLayout() {
 			<ThemedText type='defaultSemiBold'>Enter order link:</ThemedText>
 			<ThemedView style={{ alignSelf:'flex-start', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
 				<TextInput
-					placeholder="Dismiss keyboard to start"
+					// placeholder="Dismiss keyboard to start"
 					onSubmitEditing={e => processLink(e.nativeEvent.text)}
 					clearButtonMode="always"
 					style={{
@@ -51,6 +51,24 @@ export default function RootLayout() {
 					}}
 				/>
                 <ActivityIndicator style={{padding: 8, marginTop: 8, display: isLoading ? 'flex': 'none'}}/>
+			</ThemedView>
+
+			<ThemedText style={{paddingTop: 16}} type='defaultSemiBold'>Enter order id:</ThemedText>
+			<ThemedView style={{ alignSelf:'flex-start', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+				<TextInput
+					// placeholder="Dismiss keyboard to start"
+					onSubmitEditing={e => router.push(`/list?orderId=${e.nativeEvent.text}`)}
+					clearButtonMode="always"
+					style={{
+                        flex: 1,
+						color: themeColor === 'dark' ? '#fff' : '#000',
+						borderWidth: 0.5,
+						borderColor: 'gray',
+						borderRadius: 4,
+						padding: 8,
+						marginTop: 8,
+					}}
+				/>
 			</ThemedView>
 		</ThemedView>
 	)
