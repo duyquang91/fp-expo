@@ -15,12 +15,19 @@ export const fetchCurrentGroupOrderMetadata = async (
 		headers: myHeaders,
 	}
 
-	const json = await fetchAPI(
+	return fetchAPI(
 		`https://sg.fd-api.com/api/v5/groupie/metadata/${groupOrderId}`,
 		requestOptions,
 	)
-		.then(async response => await response.json())
-	return (JSON.parse(JSON.stringify(json)) as ResponseType<GroupOrderMetaData>).data
+	.then(response => response.json())
+	.then(json => {
+		const obj = JSON.parse(JSON.stringify(json)) as ResponseType<GroupOrderMetaData>
+		if (obj.success) {
+			return obj.data
+		} else {
+			throw new Error(`Failed to fetch group order metadata: ${JSON.stringify(obj)}`)
+		}
+	})
 }
 
 export async function syncRemoteDatabase(
@@ -32,13 +39,22 @@ export async function syncRemoteDatabase(
 	} else {
 		url = 'https://stevedao.xyz/fp/users'
 	}
-	const json = await fetchAPI(url, {
+	return fetchAPI(url, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-	}).then(res => res.json())
-	return (JSON.parse(JSON.stringify(json)) as ResponseType<UserBackend[]>).data
+	})
+	.then(res => res.json())
+	.then(json => {
+		console.log('syncRemoteDatabase', json)
+		const obj = JSON.parse(JSON.stringify(json)) as ResponseType<UserBackend[]>
+		if (json.success) {
+			return json.data
+		} else {
+			throw new Error(`Failed to fetch users: ${JSON.stringify(json)}`)
+		}
+	})
 }
 
 export async function refreshToken(userId: string): Promise<any> {

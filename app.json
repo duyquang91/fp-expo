@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.duyquang91.foodpandakiller"
     },
     "web": {
       "bundler": "metro",
@@ -48,6 +49,12 @@
         "projectId": "a2b7e94f-ea2e-4169-94fc-9800ce64d879"
       }
     },
-    "owner": "duyquang91"
+    "owner": "duyquang91",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a2b7e94f-ea2e-4169-94fc-9800ce64d879"
+    }
   }
 }

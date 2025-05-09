@@ -10,7 +10,7 @@ import * as FPServices from '../fpServices/fpServices'
 
 export default function HomeContentLayout() {
 	const [getData, setData] = useState<UserBackend[]>([])
-	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData | null>(null)
+	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData>()
 	const [isLoading, setLoading] = useState(false)
 	const { orderId } = useLocalSearchParams()
 
@@ -18,6 +18,7 @@ export default function HomeContentLayout() {
 		setLoading(true)
 		FPServices.syncRemoteDatabase('vn')
 			.then(res => setData(res))
+			.catch(err => alert(err.message))
 			.finally(() => setLoading(false))
 	}
 
@@ -25,7 +26,7 @@ export default function HomeContentLayout() {
 		setLoading(true)
 		const users = getData.filter(user => isAuthExpired(user.authToken))
 		for (const user of users) {
-			FPServices.refreshToken(user.userId)
+			FPServices.refreshToken(user.userId).catch(err => console.log(err))
 		}
 		onRefresh()
 	}
@@ -36,7 +37,7 @@ export default function HomeContentLayout() {
 				<ThemedText
 					darkColor="red"
 					lightColor="red"
-					style={{ fontStyle: 'italic' }}
+					style={{ fontStyle: 'italic', fontWeight: 'light' }}
 				>
 					Expired
 				</ThemedText>
@@ -44,7 +45,7 @@ export default function HomeContentLayout() {
 		}
 		const date = new Date(getAuthInterval(authToken) * 1000)
 		return (
-			<ThemedText darkColor="grey" style={{ fontStyle: 'italic' }}>
+			<ThemedText darkColor="grey" style={{ fontStyle: 'italic', fontWeight: 'light' }}>
 				{date.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'short',
@@ -82,7 +83,8 @@ export default function HomeContentLayout() {
 				justifyContent: 'flex-start',
 			}}
 		>
-			<ThemedView
+			{getGroupOrder && (
+				<ThemedView
 				style={{
 					marginBottom: 16,
 					padding: 16,
@@ -92,7 +94,7 @@ export default function HomeContentLayout() {
 				}}
 			>
 				<ThemedText type="defaultSemiBold" numberOfLines={1}>
-					Group: {getGroupOrder ? getGroupOrder.host.name : ''}
+					Group: {getGroupOrder?.vendor.name}
 				</ThemedText>
 				<ThemedView
 					lightColor="dimgray"
@@ -100,9 +102,10 @@ export default function HomeContentLayout() {
 					style={{ height: 0.35, marginTop: 8, marginBottom: 8 }}
 				/>
 				<ThemedText type="defaultSemiBold">
-					Host by: {getGroupOrder ? getGroupOrder.vendor.name : ''}
+					Host by: {getGroupOrder?.vendor.name}
 				</ThemedText>
 			</ThemedView>
+			)}
 
 			<FlatList
 				refreshing={isLoading}
@@ -122,18 +125,20 @@ export default function HomeContentLayout() {
 						}}
 					>
 						<ThemedView style={{ flex: 1 }}>
-							<ThemedText>{user.item.name}</ThemedText>
+							<ThemedText type="defaultSemiBold">{user.item.name}</ThemedText>
 							{getTokenExpiryRemainingString(user.item.authToken)}
 						</ThemedView>
-						<Button
+						{getGroupOrder && (
+							<Button
 							variant="plain"
 							disabled={isAuthExpired(user.item.authToken)}
 						>
 							Join & ready
 						</Button>
+						)}
 					</ThemedView>
 				)}
-				keyExtractor={user => user.userId}
+				keyExtractor={user => user.authToken}
 			></FlatList>
 
 			<Button
