@@ -5,14 +5,18 @@ import { getAuthInterval, isAuthExpired } from '@/utils'
 import { Button } from '@react-navigation/elements'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { FlatList } from 'react-native'
+import { FlatList, StyleSheet } from 'react-native'
 import * as FPServices from '../fpServices/fpServices'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { Colors } from '@/constants/Colors'
+import { useThemeColor } from '@/hooks/useThemeColor'
 
 export default function HomeContentLayout() {
 	const [getData, setData] = useState<UserBackend[]>([])
 	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData>()
 	const [isLoading, setLoading] = useState(false)
 	const { orderId } = useLocalSearchParams()
+	const iconColor = useThemeColor({}, 'icon')
 
 	const onRefresh = () => {
 		setLoading(true)
@@ -25,10 +29,13 @@ export default function HomeContentLayout() {
 	const refreshAllTokens = () => {
 		setLoading(true)
 		const users = getData.filter(user => isAuthExpired(user.authToken))
-		for (const user of users) {
-			FPServices.refreshToken(user.userId).catch(err => console.log(err))
-		}
-		onRefresh()
+		const refreshPromises = users.map(user =>
+			FPServices.refreshToken(user.userId),
+		)
+
+		Promise.allSettled(refreshPromises)
+			.then(_ => onRefresh())
+			.catch(err => alert(err.message))
 	}
 
 	function getTokenExpiryRemainingString(authToken: string) {
@@ -90,23 +97,32 @@ export default function HomeContentLayout() {
 				<ThemedView
 					style={{
 						marginBottom: 16,
-						padding: 16,
+						padding: 8,
 						borderRadius: 8,
-						borderColor: 'dimgray',
+						borderColor: iconColor,
 						borderWidth: 0.35,
 					}}
 				>
-					<ThemedText type="defaultSemiBold" numberOfLines={1}>
-						Group: {getGroupOrder?.vendor.name}
-					</ThemedText>
+					<ThemedView style={{...styles.subHeader, flexDirection: 'row', justifyContent: 'center', }}>
+						<MaterialIcons color={iconColor} name='restaurant' size={14} style={styles.subHeaderIcon} />
+						<ThemedText numberOfLines={1} style={styles.header}>{getGroupOrder.vendor.name}</ThemedText>
+					</ThemedView>
 					<ThemedView
-						lightColor="dimgray"
-						darkColor="dimgray"
+						lightColor={iconColor}
+						darkColor={iconColor}
 						style={{ height: 0.35, marginTop: 8, marginBottom: 8 }}
 					/>
-					<ThemedText type="defaultSemiBold">
-						Host by: {getGroupOrder?.vendor.name}
-					</ThemedText>
+					<ThemedView style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
+					<ThemedView style={styles.subHeader}>
+						<MaterialIcons color={iconColor} name='person' size={13} style={styles.subHeaderIcon} />
+						<ThemedText numberOfLines={1} style={styles.header}>{getGroupOrder.host.name}</ThemedText>
+					</ThemedView>
+
+					<ThemedView style={styles.subHeader}>
+						<MaterialIcons color={iconColor} name='motorcycle' size={16} style={styles.subHeaderIcon} />
+						<ThemedText numberOfLines={1} style={styles.header}>{getGroupOrder.fulfilment_time_text}</ThemedText>
+					</ThemedView>
+					</ThemedView>
 				</ThemedView>
 			)}
 
@@ -161,3 +177,19 @@ export default function HomeContentLayout() {
 		</ThemedView>
 	)
 }
+
+const styles = StyleSheet.create({
+	header: {
+		textAlign: 'center',
+		fontSize: 13,
+		fontWeight: 'light'
+	},
+	subHeader: { 
+		flexDirection: 'row', 
+		justifyContent: 'flex-start', 
+		alignItems: 'center' 
+	},
+	subHeaderIcon: {
+		marginRight: 4
+	}
+})

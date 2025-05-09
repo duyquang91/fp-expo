@@ -1,14 +1,18 @@
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import React from 'react'
+import React, { use } from 'react'
 import { ActivityIndicator, TextInput, useColorScheme } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { fetchAPI } from '../utils'
 import { router } from 'expo-router'
+import { useTheme } from '@react-navigation/native'
+import { useThemeColor } from '@/hooks/useThemeColor'
 
 export default function RootLayout() {
 	const themeColor = useColorScheme()
 	const [isLoading, setIsLoading] = React.useState(false)
+	const textColor = useThemeColor({}, 'text')
+	const iconColor = useThemeColor({}, 'icon')
 
 	const processLink = (link: string) => {
 		setIsLoading(true)
@@ -47,11 +51,12 @@ export default function RootLayout() {
 					// placeholder="Dismiss keyboard to start"
 					onSubmitEditing={e => processLink(e.nativeEvent.text)}
 					clearButtonMode="always"
+					returnKeyType='go'
 					style={{
 						flex: 1,
-						color: themeColor === 'dark' ? '#fff' : '#000',
+						color: textColor,
 						borderWidth: 0.5,
-						borderColor: 'gray',
+						borderColor: iconColor,
 						borderRadius: 4,
 						padding: 8,
 						marginTop: 8,
@@ -83,17 +88,22 @@ export default function RootLayout() {
 						router.push(`/list?orderId=${e.nativeEvent.text}`)
 					}
 					clearButtonMode="always"
+					returnKeyType="go"
 					style={{
 						flex: 1,
-						color: themeColor === 'dark' ? '#fff' : '#000',
+						color: textColor,
 						borderWidth: 0.5,
-						borderColor: 'gray',
+						borderColor: iconColor,
 						borderRadius: 4,
 						padding: 8,
 						marginTop: 8,
 					}}
 				/>
 			</ThemedView>
+
+			<ThemedText lightColor={iconColor} darkColor={iconColor} style={{ paddingTop: 16, fontWeight: 'light', fontSize: 14 }} type="defaultSemiBold">
+				You can use etheir Order link or id then press "Enter" on the keyboard to continue.
+			</ThemedText>
 		</ThemedView>
 	)
 }

@@ -1,5 +1,5 @@
 import { fetchAPI } from '@/utils'
-import { GroupOrderMetaData, ResponseType, UserBackend } from './fpModels'
+import { FPResponseType, GroupOrderMetaData, ResponseType, UserBackend } from './fpModels'
 
 export const fetchCurrentGroupOrderMetadata = async (
 	selfAuthToken: string,
@@ -21,11 +21,10 @@ export const fetchCurrentGroupOrderMetadata = async (
 	)
 		.then(response => response.json())
 		.then(json => {
-			console.log(json)
 			const obj = JSON.parse(
 				JSON.stringify(json),
-			) as ResponseType<GroupOrderMetaData>
-			if (obj.success) {
+			) as FPResponseType<GroupOrderMetaData>
+			if (obj.status_code === 200) {
 				return obj.data
 			} else {
 				throw new Error(
@@ -52,7 +51,6 @@ export async function syncRemoteDatabase(
 	})
 		.then(res => res.json())
 		.then(json => {
-			console.log('syncRemoteDatabase', json)
 			const obj = JSON.parse(JSON.stringify(json)) as ResponseType<
 				UserBackend[]
 			>
