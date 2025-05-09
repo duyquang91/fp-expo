@@ -8,10 +8,10 @@ import { router } from 'expo-router'
 
 export default function RootLayout() {
 	const themeColor = useColorScheme()
-    const [ isLoading, setIsLoading ] = React.useState(false)
+	const [isLoading, setIsLoading] = React.useState(false)
 
 	const processLink = (link: string) => {
-        setIsLoading(true)
+		setIsLoading(true)
 		fetchAPI(link, { method: 'HEAD', redirect: 'follow' })
 			.then(response => {
 				const finalUrl = response.url
@@ -19,29 +19,36 @@ export default function RootLayout() {
 				const orderId = orderIdMatch ? orderIdMatch[1] : null
 
 				if (orderId) {
-                    router.push(`/list?orderId=${orderId}`)
+					router.push(`/list?orderId=${orderId}`)
 				} else {
 					alert('No orderId found in the URL')
 				}
 			})
 			.catch(error => {
 				alert(`Error fetching URL: ${error.message}`)
-			}).finally(() => {
-                setIsLoading(false)
-            }
-        )
+			})
+			.finally(() => {
+				setIsLoading(false)
+			})
 	}
 
 	return (
-		<ThemedView style={{flex: 1, padding: 24}}>
-			<ThemedText type='defaultSemiBold'>Enter order link:</ThemedText>
-			<ThemedView style={{ alignSelf:'flex-start', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+		<ThemedView style={{ flex: 1, padding: 24 }}>
+			<ThemedText type="defaultSemiBold">Enter order link:</ThemedText>
+			<ThemedView
+				style={{
+					alignSelf: 'flex-start',
+					flexDirection: 'row',
+					justifyContent: 'flex-start',
+					alignItems: 'center',
+				}}
+			>
 				<TextInput
 					// placeholder="Dismiss keyboard to start"
 					onSubmitEditing={e => processLink(e.nativeEvent.text)}
 					clearButtonMode="always"
 					style={{
-                        flex: 1,
+						flex: 1,
 						color: themeColor === 'dark' ? '#fff' : '#000',
 						borderWidth: 0.5,
 						borderColor: 'gray',
@@ -50,17 +57,34 @@ export default function RootLayout() {
 						marginTop: 8,
 					}}
 				/>
-                <ActivityIndicator style={{padding: 8, marginTop: 8, display: isLoading ? 'flex': 'none'}}/>
+				<ActivityIndicator
+					style={{
+						padding: 8,
+						marginTop: 8,
+						display: isLoading ? 'flex' : 'none',
+					}}
+				/>
 			</ThemedView>
 
-			<ThemedText style={{paddingTop: 16}} type='defaultSemiBold'>Enter order id:</ThemedText>
-			<ThemedView style={{ alignSelf:'flex-start', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+			<ThemedText style={{ paddingTop: 16 }} type="defaultSemiBold">
+				Enter order id:
+			</ThemedText>
+			<ThemedView
+				style={{
+					alignSelf: 'flex-start',
+					flexDirection: 'row',
+					justifyContent: 'flex-start',
+					alignItems: 'center',
+				}}
+			>
 				<TextInput
 					// placeholder="Dismiss keyboard to start"
-					onSubmitEditing={e => router.push(`/list?orderId=${e.nativeEvent.text}`)}
+					onSubmitEditing={e =>
+						router.push(`/list?orderId=${e.nativeEvent.text}`)
+					}
 					clearButtonMode="always"
 					style={{
-                        flex: 1,
+						flex: 1,
 						color: themeColor === 'dark' ? '#fff' : '#000',
 						borderWidth: 0.5,
 						borderColor: 'gray',
@@ -73,5 +97,3 @@ export default function RootLayout() {
 		</ThemedView>
 	)
 }
-
-

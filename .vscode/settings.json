@@ -6,7 +6,7 @@
 	},
 	"editor.formatOnSave": true,
 	"editor.formatOnType": true,
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.defaultFormatter": "expo.vscode-expo-tools",
 	"typescript.format.enable": false,
 	"javascript.format.enable": false,
 	"prettier.singleQuote": true,
@@ -17,5 +17,11 @@
 	"prettier.tabWidth": 2,
 	"[typescriptreact]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
 	}
 }

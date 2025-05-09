@@ -21,19 +21,15 @@ export default function RootLayout() {
 					name="index"
 					options={{
 						title: 'Food Panda Killer',
-						headerRight: () => (
-							<RightHeaderThemeButton />
-						)
+						headerRight: () => <RightHeaderThemeButton />,
 					}}
-					/>
+				/>
 				<Stack.Screen
 					name="list"
 					options={{
 						title: 'Group Order',
 						headerBackButtonDisplayMode: 'minimal',
-								headerRight: () => (
-							<RightHeaderThemeButton />
-						)
+						headerRight: () => <RightHeaderThemeButton />,
 					}}
 				/>
 				<Stack.Screen

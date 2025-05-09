@@ -45,7 +45,10 @@ export default function HomeContentLayout() {
 		}
 		const date = new Date(getAuthInterval(authToken) * 1000)
 		return (
-			<ThemedText darkColor="grey" style={{ fontStyle: 'italic', fontWeight: 'light' }}>
+			<ThemedText
+				darkColor="grey"
+				style={{ fontStyle: 'italic', fontWeight: 'light' }}
+			>
 				{date.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'short',
@@ -85,26 +88,26 @@ export default function HomeContentLayout() {
 		>
 			{getGroupOrder && (
 				<ThemedView
-				style={{
-					marginBottom: 16,
-					padding: 16,
-					borderRadius: 8,
-					borderColor: 'dimgray',
-					borderWidth: 0.35,
-				}}
-			>
-				<ThemedText type="defaultSemiBold" numberOfLines={1}>
-					Group: {getGroupOrder?.vendor.name}
-				</ThemedText>
-				<ThemedView
-					lightColor="dimgray"
-					darkColor="dimgray"
-					style={{ height: 0.35, marginTop: 8, marginBottom: 8 }}
-				/>
-				<ThemedText type="defaultSemiBold">
-					Host by: {getGroupOrder?.vendor.name}
-				</ThemedText>
-			</ThemedView>
+					style={{
+						marginBottom: 16,
+						padding: 16,
+						borderRadius: 8,
+						borderColor: 'dimgray',
+						borderWidth: 0.35,
+					}}
+				>
+					<ThemedText type="defaultSemiBold" numberOfLines={1}>
+						Group: {getGroupOrder?.vendor.name}
+					</ThemedText>
+					<ThemedView
+						lightColor="dimgray"
+						darkColor="dimgray"
+						style={{ height: 0.35, marginTop: 8, marginBottom: 8 }}
+					/>
+					<ThemedText type="defaultSemiBold">
+						Host by: {getGroupOrder?.vendor.name}
+					</ThemedText>
+				</ThemedView>
 			)}
 
 			<FlatList
@@ -130,11 +133,11 @@ export default function HomeContentLayout() {
 						</ThemedView>
 						{getGroupOrder && (
 							<Button
-							variant="plain"
-							disabled={isAuthExpired(user.item.authToken)}
-						>
-							Join & ready
-						</Button>
+								variant="plain"
+								disabled={isAuthExpired(user.item.authToken)}
+							>
+								Join & ready
+							</Button>
 						)}
 					</ThemedView>
 				)}

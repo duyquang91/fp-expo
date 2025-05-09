@@ -40,7 +40,6 @@
     "react-native-screens": "~4.10",
     "react-native-web": "~0.20",
     "react-native-webview": "~13.13",
-    "expo-dev-client": "~5.1",
     "expo-updates": "~0.28"
   },
   "devDependencies": {
