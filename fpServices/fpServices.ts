@@ -15,15 +15,12 @@ export const fetchCurrentGroupOrderMetadata = async (
 		headers: myHeaders,
 	}
 
-	return await fetchAPI(
+	const json = await fetchAPI(
 		`https://sg.fd-api.com/api/v5/groupie/metadata/${groupOrderId}`,
 		requestOptions,
 	)
 		.then(async response => await response.json())
-		.then(result => result.data)
-		.catch(error => {
-			console.error('Fail to fetch group order metadata', error)
-		})
+	return (JSON.parse(JSON.stringify(json)) as ResponseType<GroupOrderMetaData>).data
 }
 
 export async function syncRemoteDatabase(
