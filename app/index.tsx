@@ -102,7 +102,7 @@ export default function RootLayout() {
 			</ThemedView>
 
 			<ThemedText lightColor={iconColor} darkColor={iconColor} style={{ paddingTop: 16, fontWeight: 'light', fontSize: 14 }} type="defaultSemiBold">
-				You can use etheir Order link or id then press "Enter" on the keyboard to continue.
+				You can use either Order link or id then press "Enter" on the keyboard to continue.
 			</ThemedText>
 		</ThemedView>
 	)
