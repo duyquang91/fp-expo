@@ -33,6 +33,14 @@ export default function RootLayout() {
 					}}
 				/>
 				<Stack.Screen
+					name="test"
+					options={{
+						title: 'Test component',
+						headerBackButtonDisplayMode: 'minimal',
+						headerRight: () => <RightHeaderThemeButton />,
+					}}
+				/>
+				<Stack.Screen
 					name="+not-found"
 					options={{
 						title: 'Not Found',

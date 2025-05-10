@@ -1,5 +1,14 @@
 import { fetchAPI } from '@/utils'
-import { FPResponseType, GroupOrderMetaData, ResponseType, UserBackend } from './fpModels'
+import {
+	AddressLocalStorageData,
+	CartLocalStorageData,
+	FPResponseType,
+	getEncodedDateString,
+	GroupOrderMetaData,
+	ResponseType,
+	UserAllowance,
+	UserBackend,
+} from './fpModels'
 
 export const fetchCurrentGroupOrderMetadata = async (
 	selfAuthToken: string,
@@ -69,4 +78,40 @@ export async function refreshToken(userId: string): Promise<any> {
 			'Content-Type': 'application/json',
 		},
 	})
+}
+
+export const fetchUserAllowance = async (
+	user: UserBackend,
+	cart: CartLocalStorageData,
+	address: AddressLocalStorageData,
+): Promise<UserAllowance> => {
+	const myHeaders = new Headers()
+	myHeaders.append('Authorization', user.authToken)
+	myHeaders.append('x-fp-api-key', 'corporate')
+	myHeaders.append('Content-Type', 'application/json')
+
+	const requestOptions = {
+		method: 'GET',
+		headers: myHeaders,
+	}
+
+	return fetch(
+		`https://sg.fd-api.com/api/v5/corporate-api/allowance?fulfilment_time=${getEncodedDateString(
+			cart.order_time,
+		)}&vertical=restaurants&expedition_type=${
+			cart.expedition_type
+		}&company_location_id=${address.corporate_reference_id}`,
+		requestOptions,
+	)
+		.then(res => res.json())
+		.then(json => {
+			const obj = JSON.parse(
+				JSON.stringify(json),
+			) as FPResponseType<UserAllowance>
+			if (obj.status_code === 200) {
+				return json.data
+			} else {
+				throw new Error(`Failed to fetch users: ${JSON.stringify(json)}`)
+			}
+		})
 }

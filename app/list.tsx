@@ -1,15 +1,15 @@
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
+import { GroupHeader } from '@/components/ui/GroupHeader'
+import { UserCard } from '@/components/ui/UserCard'
+import { Colors } from '@/constants/Colors'
 import { GroupOrderMetaData, UserBackend } from '@/fpServices/fpModels'
-import { getAuthInterval, isAuthExpired } from '@/utils'
-import { Button } from '@react-navigation/elements'
+import { useThemeColor } from '@/hooks/useThemeColor'
+import { isAuthExpired } from '@/utils'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { FlatList, StyleSheet } from 'react-native'
 import * as FPServices from '../fpServices/fpServices'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { Colors } from '@/constants/Colors'
-import { useThemeColor } from '@/hooks/useThemeColor'
 
 export default function HomeContentLayout() {
 	const [getData, setData] = useState<UserBackend[]>([])
@@ -38,33 +38,6 @@ export default function HomeContentLayout() {
 			.catch(err => alert(err.message))
 	}
 
-	function getTokenExpiryRemainingString(authToken: string) {
-		if (isAuthExpired(authToken)) {
-			return (
-				<ThemedText
-					darkColor="red"
-					lightColor="red"
-					style={{ fontStyle: 'italic', fontWeight: 'light' }}
-				>
-					Expired
-				</ThemedText>
-			)
-		}
-		const date = new Date(getAuthInterval(authToken) * 1000)
-		return (
-			<ThemedText
-				darkColor="grey"
-				style={{ fontStyle: 'italic', fontWeight: 'light' }}
-			>
-				{date.toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'short',
-					day: 'numeric',
-				})}
-			</ThemedText>
-		)
-	}
-
 	useEffect(() => {
 		onRefresh()
 	}, [])
@@ -88,92 +61,30 @@ export default function HomeContentLayout() {
 		<ThemedView
 			style={{
 				flex: 1,
-				padding: 16,
 				flexDirection: 'column',
 				justifyContent: 'flex-start',
+				alignItems: 'stretch',
 			}}
 		>
-			{getGroupOrder && (
-				<ThemedView
-					style={{
-						marginBottom: 16,
-						padding: 8,
-						borderRadius: 8,
-						borderColor: iconColor,
-						borderWidth: 0.35,
-					}}
-				>
-					<ThemedView style={{...styles.subHeader, flexDirection: 'row', justifyContent: 'center', }}>
-						<MaterialIcons color={iconColor} name='restaurant' size={14} style={styles.subHeaderIcon} />
-						<ThemedText numberOfLines={1} style={styles.header}>{getGroupOrder.vendor.name}</ThemedText>
-					</ThemedView>
-					<ThemedView
-						lightColor={iconColor}
-						darkColor={iconColor}
-						style={{ height: 0.35, marginTop: 8, marginBottom: 8 }}
-					/>
-					<ThemedView style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}>
-					<ThemedView style={styles.subHeader}>
-						<MaterialIcons color={iconColor} name='person' size={13} style={styles.subHeaderIcon} />
-						<ThemedText numberOfLines={1} style={styles.header}>{getGroupOrder.host.name}</ThemedText>
-					</ThemedView>
-
-					<ThemedView style={styles.subHeader}>
-						<MaterialIcons color={iconColor} name='motorcycle' size={16} style={styles.subHeaderIcon} />
-						<ThemedText numberOfLines={1} style={styles.header}>{getGroupOrder.fulfilment_time_text}</ThemedText>
-					</ThemedView>
-					</ThemedView>
-				</ThemedView>
-			)}
+			{getGroupOrder && <GroupHeader order={getGroupOrder} />}
 
 			<FlatList
 				refreshing={isLoading}
 				showsVerticalScrollIndicator={false}
 				onRefresh={onRefresh}
 				data={getData}
-				renderItem={user => (
-					<ThemedView
-						style={{
-							flexDirection: 'row',
-							justifyContent: 'flex-start',
-							alignItems: 'center',
-							borderBottomWidth: 0.35,
-							borderBottomColor: 'transparent',
-							paddingTop: 8,
-							paddingBottom: 8,
-						}}
-					>
-						<ThemedView style={{ flex: 1 }}>
-							<ThemedText type="defaultSemiBold">{user.item.name}</ThemedText>
-							{getTokenExpiryRemainingString(user.item.authToken)}
-						</ThemedView>
-						{getGroupOrder && (
-							<Button
-								variant="plain"
-								disabled={isAuthExpired(user.item.authToken)}
-							>
-								Join & ready
-							</Button>
-						)}
-					</ThemedView>
-				)}
+				renderItem={user => <UserCard user={user.item} order={getGroupOrder} />}
 				keyExtractor={user => user.authToken}
 			></FlatList>
 
-			<Button
-				variant="filled"
-				style={{
-					paddingTop: 16,
-					paddingBottom: 16,
-					marginTop: 8,
-					marginBottom: 16,
-					alignSelf: 'center',
-					width: '100%',
-				}}
-				onPress={() => refreshAllTokens()}
+			<ThemedText
+				lightColor={Colors.light.action}
+				darkColor={Colors.dark.action}
+				style={{ height: 44, margin: 16, textAlign: 'center' }}
+				onPress={_ => refreshAllTokens()}
 			>
 				Refresh expired tokens
-			</Button>
+			</ThemedText>
 		</ThemedView>
 	)
 }
@@ -182,14 +93,14 @@ const styles = StyleSheet.create({
 	header: {
 		textAlign: 'center',
 		fontSize: 13,
-		fontWeight: 'light'
+		fontWeight: 'light',
 	},
-	subHeader: { 
-		flexDirection: 'row', 
-		justifyContent: 'flex-start', 
-		alignItems: 'center' 
+	subHeader: {
+		flexDirection: 'row',
+		justifyContent: 'flex-start',
+		alignItems: 'center',
 	},
 	subHeaderIcon: {
-		marginRight: 4
-	}
+		marginRight: 4,
+	},
 })

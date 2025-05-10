@@ -13,6 +13,7 @@ export interface UserBackend {
 	authToken: string
 	cookie: string
 	email: string
+	allowance?: number
 }
 
 export interface CustomerCartStatus {
@@ -23,7 +24,6 @@ export interface CustomerCartStatus {
 
 export interface UserAllowance {
 	allowance: number
-	customer_code: string
 }
 
 export interface UserJWTToken {
@@ -96,4 +96,30 @@ export interface AllowanceAndCartStatusInfo {
 	validTill: number
 	groupId: string | undefined
 	data: UserInfo[]
+}
+
+export const getEncodedDateString = (iosString: string): string => {
+  var date = new Date(iosString)
+  const dateString =
+    date.getFullYear() +
+    '-' +
+    `${date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1}` +
+    '-' +
+    `${date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()}` +
+    'T' +
+    `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}` +
+    ':' +
+    `${date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()}` +
+    ':' +
+    `${date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()}` +
+    '+0800'
+
+  return encodeURIComponent(dateString)
+}
+
+export const getISODateTimeString = (): string => {
+  const now = new Date()
+  now.setDate(now.getDate() - 1)
+
+  return now.toISOString()
 }

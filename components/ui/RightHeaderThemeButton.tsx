@@ -1,24 +1,23 @@
-import React, { FC } from 'react'
-import { ThemedText } from '../ThemedText'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { Appearance, TouchableNativeFeedback } from 'react-native'
+import React from 'react'
+import { Appearance } from 'react-native'
+import { ThemedText } from '../ThemedText'
+import { Colors } from '@/constants/Colors'
 
 export default function RightHeaderThemeButton() {
 	return (
-		<TouchableNativeFeedback
+		<ThemedText lightColor={Colors.light.action} darkColor={Colors.dark.action}
 			onPress={_ =>
 				Appearance.setColorScheme(
 					Appearance.getColorScheme() === 'light' ? 'dark' : 'light',
 				)
 			}
 		>
-			<ThemedText>
-				<MaterialIcons
-					name={
-						Appearance.getColorScheme() === 'light' ? 'light-mode' : 'dark-mode'
-					}
-				/>
-			</ThemedText>
-		</TouchableNativeFeedback>
+			<MaterialIcons
+				name={
+					Appearance.getColorScheme() === 'light' ? 'light-mode' : 'dark-mode'
+				}
+			/>
+		</ThemedText>
 	)
 }
