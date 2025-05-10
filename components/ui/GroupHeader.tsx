@@ -32,7 +32,7 @@ export const GroupHeader: FC<{ order: GroupOrderMetaData }> = ({ order }) => {
 				darkColor={Colors.dark.divider}
 				style={{
 					height: 0.35,
-					marginHorizontal: -4,
+					marginHorizontal: -8,
 					marginVertical: 4,
 				}}
 			/>

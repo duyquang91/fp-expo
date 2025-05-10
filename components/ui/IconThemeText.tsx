@@ -14,9 +14,9 @@ export const IconThemeText: FC<{
 	styles?: TextStyle
 }> = ({ iconName, text, size, lightColor, darkColor, styles }) => {
 	return (
-		<ThemedView darkColor='transparent' lightColor='transparent' style={{ flexDirection: 'row', alignItems: 'center' }}>
-			<MaterialIcons style={{ color: useColorScheme() === 'dark' ? darkColor : lightColor, paddingRight: 2}} name={iconName} size={size}/>
-			<ThemedText numberOfLines={1} lightColor={lightColor} darkColor={darkColor} style={{ fontSize: size, ...styles }}>{text}</ThemedText>
+		<ThemedView darkColor='transparent' lightColor='transparent' style={{ flexDirection: 'row', justifyContent: "flex-start", alignItems: 'center' }}>
+			<MaterialIcons style={{ color: useColorScheme() === 'dark' ? darkColor : lightColor, paddingRight: 2 }} name={iconName} size={size}/>
+			<ThemedText numberOfLines={1} lightColor={lightColor} darkColor={darkColor} style={{ fontSize: size, paddingRight: 8 }}>{text}</ThemedText>
 		</ThemedView>
 	)
 }

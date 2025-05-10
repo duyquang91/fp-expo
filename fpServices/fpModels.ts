@@ -42,11 +42,16 @@ export interface FPResponseType<T> {
 
 export interface GroupOrderMetaData {
 	fulfilment_time_text: string
+	fulfilment_time: string
+	expedition_type: 'delivery' | 'pickup'
 	host: {
 		name: string
 	}
 	vendor: {
 		name: string
+	}
+	corporate: {
+		location_id: string
 	}
 }
 
@@ -117,7 +122,7 @@ export const getEncodedDateString = (iosString: string): string => {
   return encodeURIComponent(dateString)
 }
 
-export const getISODateTimeString = (): string => {
+export const getISODateTimeString = (fulfilment_time: string): string => {
   const now = new Date()
   now.setDate(now.getDate() - 1)
 

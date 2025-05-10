@@ -21,7 +21,10 @@ export default function HomeContentLayout() {
 	const onRefresh = () => {
 		setLoading(true)
 		FPServices.syncRemoteDatabase('vn')
-			.then(res => setData(res))
+			.then(res => {
+				setData(res)
+				fetchGroupMetaData(res)
+			})
 			.catch(err => alert(err.message))
 			.finally(() => setLoading(false))
 	}
@@ -38,24 +41,40 @@ export default function HomeContentLayout() {
 			.catch(err => alert(err.message))
 	}
 
-	useEffect(() => {
-		onRefresh()
-	}, [])
-
-	useEffect(() => {
-		if (getData.length === 0) return
-		const selfAuthToken = getData.find(user => !isAuthExpired(user.authToken))
+	const fetchGroupMetaData = (users: UserBackend[]) => {
+		if (users.length === 0) return
+		const selfAuthToken = users.find(user => !isAuthExpired(user.authToken))
 		if (selfAuthToken) {
 			FPServices.fetchCurrentGroupOrderMetadata(
 				selfAuthToken.authToken,
 				orderId as string,
 			)
-				.then(res => setGroupOrder(res))
+				.then(res => {
+					setGroupOrder(res)
+					fetchAllowance(users, res)
+				})
 				.catch(err => alert(err.message))
 		} else {
 			alert('All tokens are expired, please refresh them')
 		}
-	}, [getData])
+	}
+
+	const fetchAllowance = async (
+		users: UserBackend[],
+		order: GroupOrderMetaData,
+	) => {
+		if (users.length === 0) return
+		for (let i = 0; i < users.length; i++) {
+			if (isAuthExpired(users[i].authToken)) continue
+			const res = await FPServices.fetchUserAllowance(users[i], order)
+			users[i].allowance = res.allowance
+			setData([...users])
+		}
+	}
+
+	useEffect(() => {
+		onRefresh()
+	}, [])
 
 	return (
 		<ThemedView

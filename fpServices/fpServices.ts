@@ -4,6 +4,7 @@ import {
 	CartLocalStorageData,
 	FPResponseType,
 	getEncodedDateString,
+	getISODateTimeString,
 	GroupOrderMetaData,
 	ResponseType,
 	UserAllowance,
@@ -82,8 +83,7 @@ export async function refreshToken(userId: string): Promise<any> {
 
 export const fetchUserAllowance = async (
 	user: UserBackend,
-	cart: CartLocalStorageData,
-	address: AddressLocalStorageData,
+	order: GroupOrderMetaData,
 ): Promise<UserAllowance> => {
 	const myHeaders = new Headers()
 	myHeaders.append('Authorization', user.authToken)
@@ -96,20 +96,16 @@ export const fetchUserAllowance = async (
 	}
 
 	return fetch(
-		`https://sg.fd-api.com/api/v5/corporate-api/allowance?fulfilment_time=${getEncodedDateString(
-			cart.order_time,
-		)}&vertical=restaurants&expedition_type=${
-			cart.expedition_type
-		}&company_location_id=${address.corporate_reference_id}`,
+		`https://sg.fd-api.com/api/v5/corporate-api/allowance?fulfilment_time=${getEncodedDateString(order.fulfilment_time)}&vertical=restaurants&expedition_type=${order.expedition_type}&company_location_id=${order.corporate.location_id}`,
 		requestOptions,
 	)
 		.then(res => res.json())
 		.then(json => {
 			const obj = JSON.parse(
 				JSON.stringify(json),
-			) as FPResponseType<UserAllowance>
+			) as FPResponseType<UserAllowance[]>
 			if (obj.status_code === 200) {
-				return json.data
+				return json.data[0]
 			} else {
 				throw new Error(`Failed to fetch users: ${JSON.stringify(json)}`)
 			}
