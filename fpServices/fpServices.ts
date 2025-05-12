@@ -1,10 +1,7 @@
 import { fetchAPI } from '@/utils'
 import {
-	AddressLocalStorageData,
-	CartLocalStorageData,
 	FPResponseType,
 	getEncodedDateString,
-	getISODateTimeString,
 	GroupOrderMetaData,
 	ResponseType,
 	UserAllowance,
@@ -72,13 +69,22 @@ export async function syncRemoteDatabase(
 		})
 }
 
-export async function refreshToken(userId: string): Promise<any> {
-	fetchAPI(`https://stevedao.xyz/fp/users/refreshToken/${userId}`, {
+export async function refreshToken(userId: string): Promise<UserBackend> {
+	return fetchAPI(`https://stevedao.xyz/fp/users/refreshToken/${userId}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
 		},
 	})
+		.then(res => res.json())
+		.then(json => {
+			const obj = JSON.parse(JSON.stringify(json)) as ResponseType<UserBackend>
+			if (obj.success) {
+				return obj.data
+			} else {
+				throw new Error(`Failed to fetch users: ${JSON.stringify(json)}`)
+			}
+		})
 }
 
 export const fetchUserAllowance = async (
@@ -96,14 +102,18 @@ export const fetchUserAllowance = async (
 	}
 
 	return fetch(
-		`https://sg.fd-api.com/api/v5/corporate-api/allowance?fulfilment_time=${getEncodedDateString(order.fulfilment_time)}&vertical=restaurants&expedition_type=${order.expedition_type}&company_location_id=${order.corporate.location_id}`,
+		`https://sg.fd-api.com/api/v5/corporate-api/allowance?fulfilment_time=${getEncodedDateString(
+			order.fulfilment_time,
+		)}&vertical=restaurants&expedition_type=${
+			order.expedition_type
+		}&company_location_id=${order.corporate.location_id}`,
 		requestOptions,
 	)
 		.then(res => res.json())
 		.then(json => {
-			const obj = JSON.parse(
-				JSON.stringify(json),
-			) as FPResponseType<UserAllowance[]>
+			const obj = JSON.parse(JSON.stringify(json)) as FPResponseType<
+				UserAllowance[]
+			>
 			if (obj.status_code === 200) {
 				return json.data[0]
 			} else {

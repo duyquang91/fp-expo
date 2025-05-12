@@ -27,8 +27,8 @@ export const UserCard: FC<{
 				justifyContent: 'flex-start',
 				alignItems: 'center',
 				padding: 8,
-				margin: 8,
-				marginBottom: 4,
+				margin: 16,
+				marginBottom: -8,
 				borderRadius: 4,
 				...styles.surface,
 			}}

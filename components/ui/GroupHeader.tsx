@@ -11,8 +11,9 @@ export const GroupHeader: FC<{ order: GroupOrderMetaData }> = ({ order }) => {
 			lightColor={Colors.light.surface}
 			darkColor={Colors.dark.surface}
 			style={{
-				margin: 8,
-				padding: 8,
+				margin: 16,
+				padding: 18,
+				marginBottom: -8,
 				justifyContent: 'flex-start',
 				alignItems: 'stretch',
 				borderRadius: 4,
