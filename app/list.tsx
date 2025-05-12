@@ -4,11 +4,10 @@ import { GroupHeader } from '@/components/ui/GroupHeader'
 import { UserCard } from '@/components/ui/UserCard'
 import { Colors } from '@/constants/Colors'
 import { GroupOrderMetaData, UserBackend } from '@/fpServices/fpModels'
-import { useThemeColor } from '@/hooks/useThemeColor'
 import { isAuthExpired } from '@/utils'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet } from 'react-native'
+import { FlatList, StyleSheet, View } from 'react-native'
 import * as FPServices from '../fpServices/fpServices'
 
 export default function HomeContentLayout() {
@@ -16,7 +15,7 @@ export default function HomeContentLayout() {
 	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData>()
 	const [isLoading, setLoading] = useState(false)
 	const { orderId } = useLocalSearchParams()
-	const iconColor = useThemeColor({}, 'icon')
+	const [selectedUsers, setSeclectedUsers] = useState<UserBackend[]>([])
 
 	const onRefresh = () => {
 		setLoading(true)
@@ -39,6 +38,18 @@ export default function HomeContentLayout() {
 		Promise.allSettled(refreshPromises)
 			.then(_ => onRefresh())
 			.catch(err => alert(err.message))
+	}
+
+	const onSelectedUser = (user: UserBackend) => {
+		setSeclectedUsers(prev => {
+			const isSelected = prev.some(u => u.userId === user.userId)
+			if (isSelected) {
+				return prev.filter(u => u.userId !== user.userId)
+			} else {
+				return [...prev, user]
+			}
+		}
+		)
 	}
 
 	const fetchGroupMetaData = (users: UserBackend[]) => {
@@ -92,18 +103,28 @@ export default function HomeContentLayout() {
 				showsVerticalScrollIndicator={false}
 				onRefresh={onRefresh}
 				data={getData}
-				renderItem={user => <UserCard user={user.item} order={getGroupOrder} />}
+				renderItem={user => <UserCard user={user.item} order={getGroupOrder} onPress={onSelectedUser}/>}
 				keyExtractor={user => user.authToken}
 			></FlatList>
 
-			<ThemedText
-				lightColor={Colors.light.action}
-				darkColor={Colors.dark.action}
-				style={{ height: 44, margin: 16, textAlign: 'center' }}
-				onPress={_ => refreshAllTokens()}
-			>
-				Refresh expired tokens
-			</ThemedText>
+			<View style={{ height: 44, margin: 16, flexDirection: 'row', justifyContent: 'space-around' }}>
+				<ThemedText
+					lightColor={Colors.light.action}
+					darkColor={Colors.dark.action}
+					onPress={_ => refreshAllTokens()}
+				>
+					Refresh tokens
+				</ThemedText>
+
+				<ThemedText
+					lightColor={Colors.light.action}
+					darkColor={Colors.dark.action}
+					style={{ display: selectedUsers.length === 0 ? 'none' : 'flex' }}
+					onPress={_ => refreshAllTokens()}
+				>
+					Ready to order ({selectedUsers.length})
+				</ThemedText>
+			</View>
 		</ThemedView>
 	)
 }

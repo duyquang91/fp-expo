@@ -4,7 +4,7 @@ import { useThemeColor } from '@/hooks/useThemeColor'
 import { getAuthInterval, isAuthExpired } from '@/utils'
 import { MaterialIcons } from '@expo/vector-icons'
 import React, { FC } from 'react'
-import { StyleSheet, TouchableHighlight, useColorScheme } from 'react-native'
+import { StyleSheet, TouchableHighlight, TouchableNativeFeedback, TouchableOpacity, useColorScheme } from 'react-native'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 import { IconThemeText } from './IconThemeText'
@@ -12,7 +12,9 @@ import { IconThemeText } from './IconThemeText'
 export const UserCard: FC<{
 	user: UserBackend
 	order: GroupOrderMetaData | undefined
-}> = ({ user, order }) => {
+	onPress?: (user: UserBackend) => void
+}> = ({ user, order, onPress }) => {
+	const [selected, setSelected] = React.useState(false)
 	const colorScheme = useColorScheme()
 	const styles = StyleSheet.create({
 		surface: {
@@ -38,15 +40,20 @@ export const UserCard: FC<{
 				{getTokenExpiryRemainingString(user)}
 			</ThemedView>
 			{order && !isAuthExpired(user.authToken) && (
-				<TouchableHighlight>
+				<TouchableOpacity
+					onPress={() => {
+						setSelected(!selected)
+						onPress?.(user)
+					}}
+				>
 					<MaterialIcons
-						name="add"
+						name={selected ? 'radio-button-checked' : 'radio-button-unchecked'}
 						size={24}
 						color={
 							colorScheme === 'dark' ? Colors.dark.action : Colors.light.action
 						}
 					/>
-				</TouchableHighlight>
+				</TouchableOpacity>
 			)}
 		</ThemedView>
 	)
@@ -65,19 +72,19 @@ function getTokenExpiryRemainingString(user: UserBackend) {
 		)
 	}
 	const date = new Date(getAuthInterval(user.authToken) * 1000)
-    const tokenExp = date.toLocaleDateString('en-US', {
-					month: 'numeric',
-					day: 'numeric',
-					hour: '2-digit',
-					minute: '2-digit',
-				})
+	const tokenExp = date.toLocaleDateString('en-US', {
+		month: 'numeric',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit',
+	})
 	return (
 		<ThemedText
 			darkColor={Colors.dark.info}
 			lightColor={Colors.light.info}
 			style={{ fontSize: 13 }}
 		>
-            {`$${user.allowance ?? 0} will be expired on ${tokenExp}`}
-        </ThemedText>
+			{`$${user.allowance ?? 0} will be expired on ${tokenExp}`}
+		</ThemedText>
 	)
 }
