@@ -7,7 +7,7 @@ import { GroupOrderMetaData, UserBackend } from '@/fpServices/fpModels'
 import { isAuthExpired } from '@/utils'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, View } from 'react-native'
+import { SectionList, StyleSheet, View } from 'react-native'
 import * as FPServices from '../fpServices/fpServices'
 
 export default function HomeContentLayout() {
@@ -48,8 +48,7 @@ export default function HomeContentLayout() {
 			} else {
 				return [...prev, user]
 			}
-		}
-		)
+		})
 	}
 
 	const fetchGroupMetaData = (users: UserBackend[]) => {
@@ -96,18 +95,35 @@ export default function HomeContentLayout() {
 				alignItems: 'stretch',
 			}}
 		>
-			{getGroupOrder && <GroupHeader order={getGroupOrder} />}
-
-			<FlatList
+			<SectionList
 				refreshing={isLoading}
 				showsVerticalScrollIndicator={false}
 				onRefresh={onRefresh}
-				data={getData}
-				renderItem={user => <UserCard user={user.item} order={getGroupOrder} onPress={onSelectedUser}/>}
+				sections={[{ section: getGroupOrder, data: getData }]}
+				renderSectionHeader={data =>
+					data.section.section ? (
+						<GroupHeader users={getData} order={data.section.section} />
+					) : null
+				}
+				renderItem={data => (
+					<UserCard
+						user={data.item}
+						order={getGroupOrder}
+						onPress={onSelectedUser}
+					/>
+				)}
+				stickySectionHeadersEnabled={false}
 				keyExtractor={user => user.authToken}
-			></FlatList>
+			></SectionList>
 
-			<View style={{ height: 44, margin: 16, flexDirection: 'row', justifyContent: 'space-around' }}>
+			<View
+				style={{
+					height: 44,
+					margin: 16,
+					flexDirection: 'row',
+					justifyContent: 'space-around',
+				}}
+			>
 				<ThemedText
 					lightColor={Colors.light.action}
 					darkColor={Colors.dark.action}
@@ -120,7 +136,7 @@ export default function HomeContentLayout() {
 					lightColor={Colors.light.action}
 					darkColor={Colors.dark.action}
 					style={{ display: selectedUsers.length === 0 ? 'none' : 'flex' }}
-					onPress={_ => refreshAllTokens()}
+					// onPress={_ => }
 				>
 					Ready to order ({selectedUsers.length})
 				</ThemedText>

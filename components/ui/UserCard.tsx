@@ -4,7 +4,7 @@ import { useThemeColor } from '@/hooks/useThemeColor'
 import { getAuthInterval, isAuthExpired } from '@/utils'
 import { MaterialIcons } from '@expo/vector-icons'
 import React, { FC } from 'react'
-import { StyleSheet, TouchableHighlight, TouchableNativeFeedback, TouchableOpacity, useColorScheme } from 'react-native'
+import { StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
 import { ThemedText } from '../ThemedText'
 import { ThemedView } from '../ThemedView'
 import { IconThemeText } from './IconThemeText'
@@ -23,39 +23,39 @@ export const UserCard: FC<{
 	})
 
 	return (
-		<ThemedView
-			style={{
-				flexDirection: 'row',
-				justifyContent: 'flex-start',
-				alignItems: 'center',
-				padding: 8,
-				margin: 16,
-				marginBottom: -8,
-				borderRadius: 4,
-				...styles.surface,
+		<TouchableOpacity
+			onPress={() => {
+				setSelected(!selected)
+				onPress?.(user)
 			}}
 		>
-			<ThemedView style={{ flex: 1, ...styles.surface }}>
-				<ThemedText>{user.name}</ThemedText>
-				{getTokenExpiryRemainingString(user)}
-			</ThemedView>
-			{order && !isAuthExpired(user.authToken) && (
-				<TouchableOpacity
-					onPress={() => {
-						setSelected(!selected)
-						onPress?.(user)
-					}}
-				>
+			<ThemedView
+				style={{
+					flexDirection: 'row',
+					justifyContent: 'flex-start',
+					alignItems: 'center',
+					padding: 8,
+					margin: 16,
+					marginBottom: -8,
+					borderRadius: 4,
+					...styles.surface,
+				}}
+			>
+				<ThemedView style={{ flex: 1, ...styles.surface }}>
+					<ThemedText>{user.name}</ThemedText>
+					{getTokenExpiryRemainingString(user)}
+				</ThemedView>
+				{order && !isAuthExpired(user.authToken) && (
 					<MaterialIcons
 						name={selected ? 'radio-button-checked' : 'radio-button-unchecked'}
-						size={24}
+						size={16}
 						color={
 							colorScheme === 'dark' ? Colors.dark.action : Colors.light.action
 						}
 					/>
-				</TouchableOpacity>
-			)}
-		</ThemedView>
+				)}
+			</ThemedView>
+		</TouchableOpacity>
 	)
 }
 
@@ -73,7 +73,7 @@ function getTokenExpiryRemainingString(user: UserBackend) {
 	}
 	const date = new Date(getAuthInterval(user.authToken) * 1000)
 	const tokenExp = date.toLocaleDateString('en-US', {
-		month: 'numeric',
+		month: 'short',
 		day: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',

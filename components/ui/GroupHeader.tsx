@@ -1,11 +1,14 @@
 import { Colors } from '@/constants/Colors'
-import { GroupOrderMetaData } from '@/fpServices/fpModels'
+import { GroupOrderMetaData, UserBackend } from '@/fpServices/fpModels'
 import React, { FC } from 'react'
 import { View } from 'react-native'
 import { ThemedView } from '../ThemedView'
 import { IconThemeText } from './IconThemeText'
 
-export const GroupHeader: FC<{ order: GroupOrderMetaData }> = ({ order }) => {
+export const GroupHeader: FC<{
+	users: UserBackend[]
+	order: GroupOrderMetaData
+}> = ({ users, order }) => {
 	return (
 		<ThemedView
 			lightColor={Colors.light.surface}
@@ -19,7 +22,25 @@ export const GroupHeader: FC<{ order: GroupOrderMetaData }> = ({ order }) => {
 				borderRadius: 4,
 			}}
 		>
-			<View style={{ alignItems: 'center' }}>
+			<View
+				style={{
+					flex: 1,
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+				}}
+			>
+				<IconThemeText
+					iconName="group"
+					text={
+						'$' +
+						users
+							.reduce((acc, user) => acc + (user.allowance ?? 0), 0)
+							.toString()
+					}
+					size={14}
+					lightColor={Colors.light.info}
+					darkColor={Colors.dark.info}
+				/>
 				<IconThemeText
 					iconName="restaurant"
 					text={order.vendor.name}
@@ -40,7 +61,7 @@ export const GroupHeader: FC<{ order: GroupOrderMetaData }> = ({ order }) => {
 			<View
 				style={{
 					flexDirection: 'row',
-					justifyContent: 'space-around',
+					justifyContent: 'space-between',
 				}}
 			>
 				<IconThemeText
