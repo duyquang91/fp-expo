@@ -14,12 +14,12 @@ export default function HomeContentLayout() {
 	const [getData, setData] = useState<UserBackend[]>([])
 	const [getGroupOrder, setGroupOrder] = useState<GroupOrderMetaData>()
 	const [isLoading, setLoading] = useState(false)
-	const { orderId } = useLocalSearchParams()
+	const { orderId, group } = useLocalSearchParams()
 	const [selectedUsers, setSeclectedUsers] = useState<UserBackend[]>([])
 
 	const onRefresh = () => {
 		setLoading(true)
-		FPServices.syncRemoteDatabase('vn')
+		FPServices.syncRemoteDatabase(group as string | undefined)
 			.then(res => {
 				setData(res)
 				fetchGroupMetaData(res)

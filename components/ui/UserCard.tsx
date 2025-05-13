@@ -21,9 +21,11 @@ export const UserCard: FC<{
 			backgroundColor: useThemeColor({}, 'surface'),
 		},
 	})
+	const disabled = !order || isAuthExpired(user.authToken) || user.allowance === 0
 
 	return (
 		<TouchableOpacity
+			disabled={disabled}
 			onPress={() => {
 				setSelected(!selected)
 				onPress?.(user)
@@ -45,7 +47,7 @@ export const UserCard: FC<{
 					<ThemedText>{user.name}</ThemedText>
 					{getTokenExpiryRemainingString(user)}
 				</ThemedView>
-				{order && !isAuthExpired(user.authToken) && (
+				{!disabled && (
 					<MaterialIcons
 						name={selected ? 'radio-button-checked' : 'radio-button-unchecked'}
 						size={16}
