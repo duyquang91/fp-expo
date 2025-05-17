@@ -42,7 +42,7 @@ export default function RootLayout() {
 			<SegmentedControl 
 			values={['vn', 'coffee-gang', 'dex']} 
 			onValueChange={value => setGroup(value)}
-			selectedIndex={0}
+			selectedIndex={['vn', 'coffee-gang', 'dex'].indexOf(group)}
 			style={{ marginVertical: 8 }}
 			/>
 

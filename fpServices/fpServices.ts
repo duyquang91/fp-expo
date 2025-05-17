@@ -45,7 +45,7 @@ export async function syncRemoteDatabase(
 	group: string | undefined,
 ): Promise<UserBackend[]> {
 	let url: string
-	if (group) {
+	if (group && group !== '') {
 		url = `https://stevedao.xyz/fp/users?group=${group}`
 	} else {
 		url = 'https://stevedao.xyz/fp/users'
